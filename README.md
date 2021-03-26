@@ -7,6 +7,7 @@ R script used to create a SINTAX formatted taxonomic database (FASTA file with f
 ## [findCopyFastq.sh](https://github.com/KasperSkytte/bioscripts/blob/main/findCopyFastq.sh)
 BASH script to search for fastq files and copy to a folder for further analysis. Initially made to find Illumina MiSeq/HiSeq samples, but can be applied to anything else. 
 
+### Options
 ```
 $ findCopyFastq.sh -h
 Find and copy fastq files. Reports for each sample how many files were found and copied.
@@ -20,4 +21,17 @@ Options:
           (Default: fastq)
   -s    Separator to append after sample name. 
           (Default: _)
+```
+
+### Example output
+```
+$ findCopyFastq.sh
+Finding and copying 5 sample(s)...
+(1/5) MQ200204-1:  2 file(s)
+(2/5) MQ200204-2:  2 file(s)
+(3/5) MQ200204-3:  2 file(s)
+(4/5) MQ200204-11:  2 file(s)
+(5/5) test-123:  0 file(s)
+
+1 sample(s) couldn't be found
 ```
