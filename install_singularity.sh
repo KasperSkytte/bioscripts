@@ -128,7 +128,8 @@ then
     echo "# <<< singularity installer <<<" >> ${HOME}/.bashrc
 
     scriptMessage "Removing temporary folder and its contents..."
-    sudo rm -rf "$tmp_dir"
+    chmod -R 777 "$tmp_dir"
+    rm -rf "$tmp_dir"
   else
     scriptMessage "installing singularity system-wide into /usr/local/bin..."
     ./mconfig
