@@ -101,6 +101,7 @@ then
 
   #go is only needed for compiling singularity
   export GOPATH=${PWD}/go
+  export OLDPATH=${PATH} #save for later to avoid also adding Go path to $PATH
   export PATH=${PWD}/go/bin:${PATH}
 
   scriptMessage "downloading singularity..."
@@ -123,7 +124,7 @@ then
     #then add lines
     echo "# >>> singularity installer >>>" >> ${HOME}/.bashrc
     echo "#these lines have been added by the install_singularity.sh script" >> ${HOME}/.bashrc
-    echo "export PATH=${installDir}/singularity/bin:$PATH" >> ${HOME}/.bashrc
+    echo "export PATH=${installDir}/singularity/bin:$OLDPATH" >> ${HOME}/.bashrc
     echo ". ${installDir}/singularity/etc/bash_completion.d/singularity" >> ${HOME}/.bashrc
     echo "# <<< singularity installer <<<" >> ${HOME}/.bashrc
 
@@ -137,8 +138,7 @@ then
     sudo make -j -C ./builddir install
     
     scriptMessage "enabling system-wide singularity bash auto-completion by adjusting /etc/profile..."
-    #detect and remove lines in /etc/profile previously added by this 
-    #script to avoid inflating $PATH if script is run more than once
+    #detect and remove lines in /etc/profile previously added by this script to avoid inflation
     sudo sed -i '/# >>> singularity installer >>>/,/# <<< singularity installer <<</d' /etc/profile
 
     #then add lines
