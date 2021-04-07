@@ -47,8 +47,8 @@ then
       exit 1
       ;;
     p )
-      installDir=$OPTARG
-      mkdir -p $(realpath -m "$installDir")
+      installDir=$(realpath -m "$OPTARG")
+      mkdir -p "$installDir"
       if [ ! -w "$installDir" ]
       then
         echo "Destination folder ${installDir} is not writable, exiting..."
