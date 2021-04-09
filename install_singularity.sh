@@ -3,7 +3,7 @@
 # License: GNU General Public License v3.0
 set -eu
 
-VERSION="1.1"
+VERSION="1.2"
 
 scriptMessage() {
   #check user arguments
@@ -78,7 +78,7 @@ then
   
   scriptMessage "installing system dependencies via APT..."
   #first check if installed before running a sudo command
-  pkgs="build-essential uuid-dev uidmap libgpgme11-dev squashfs-tools libseccomp-dev wget make pkg-config git cryptsetup-bin net-tools"
+  pkgs="build-essential uuid-dev uidmap libgpgme-dev squashfs-tools libseccomp-dev wget make pkg-config git cryptsetup-bin net-tools"
   if ! dpkg -s $pkgs >/dev/null 2>&1
   then
     echo "One or more system dependencies are not installed, will try to install..."
