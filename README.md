@@ -1,3 +1,16 @@
+Table of Contents
+=================
+
+   * [bioscripts](#bioscripts)
+      * [<a href="https://github.com/KasperSkytte/bioscripts/blob/main/QIIMEToSINTAXFASTA.R">QIIMEToSINTAXFASTA.R</a>](#qiimetosintaxfastar)
+      * [<a href="https://github.com/KasperSkytte/bioscripts/blob/main/findCopyFastq.sh">findCopyFastq.sh</a>](#findcopyfastqsh)
+         * [Options](#options)
+         * [Example output](#example-output)
+      * [<a href="https://github.com/KasperSkytte/bioscripts/blob/main/install_singularity.sh">install_singularity.sh</a>](#install_singularitysh)
+         * [Options](#options-1)
+
+Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+
 # bioscripts
 Miscellaneous bioinformatic helper scripts for various tasks. I recommend only using those documented below, otherwise inspect and use at your own risk, guessing what they do. I will find time at some point to go through the rest, but for now they are just here to have a home.
 
@@ -37,7 +50,8 @@ Finding and copying 5 sample(s)...
 ```
 
 ## [install_singularity.sh](https://github.com/KasperSkytte/bioscripts/blob/main/install_singularity.sh)
-Installs singularity (currently v3.6.3 using go v1.14.1) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the singularity binary.
+Installs singularity (currently v3.6.3 using go v1.14.1) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the singularity binary. Tested on Ubuntu18.04 and Ubuntu20.04. If running Ubuntu16.04 or earlier replacing `libgpgme-dev` with `libgpgme11-dev` on this line will likely be needed:
+https://github.com/KasperSkytte/bioscripts/blob/4f65e861eeb7d7201a4b900dddfae21af0bc3b04/install_singularity.sh#L81
 
 ### Options
 ```
