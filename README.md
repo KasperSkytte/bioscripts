@@ -1,6 +1,7 @@
 Table of Contents
 =================
 
+   * [Table of Contents](#table-of-contents)
    * [bioscripts](#bioscripts)
       * [<a href="https://github.com/KasperSkytte/bioscripts/blob/main/QIIMEToSINTAXFASTA.R">QIIMEToSINTAXFASTA.R</a>](#qiimetosintaxfastar)
       * [<a href="https://github.com/KasperSkytte/bioscripts/blob/main/findCopyFastq.sh">findCopyFastq.sh</a>](#findcopyfastqsh)
@@ -8,6 +9,8 @@ Table of Contents
          * [Example output](#example-output)
       * [<a href="https://github.com/KasperSkytte/bioscripts/blob/main/install_singularity.sh">install_singularity.sh</a>](#install_singularitysh)
          * [Options](#options-1)
+      * [<a href="https://github.com/KasperSkytte/bioscripts/blob/main/docker-rstudio-renv.sh">docker-rstudio-renv.sh</a>](#docker-rstudio-renvsh)
+         * [Example output](#example-output-1)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
@@ -63,3 +66,29 @@ Options:
   -h    Display this help text and exit.
   -p    Path to folder where singularity will be installed (/singularity subfolder will be created). If not provided, will be installed system-wide in /usr/local/singularity.
 ```
+
+## [docker-rstudio-renv.sh](https://github.com/KasperSkytte/bioscripts/blob/main/docker-rstudio-renv.sh)
+Builds and launches an RStudio docker container based on a specific R version of your choice. The image is based on the [rocker/rstudio](https://hub.docker.com/r/rocker/rstudio) image with some extra nice-to-have system dependencies like `libxml2-dev`, `libcairo2-dev`, `libxt-dev`, and more, which are often needed by some R packages. It has built-in support for [`renv`](https://rstudio.github.io/renv/) set up with a global package cache on the host at `${HOME}/.local/share/renv/cache` (default) to avoid unnecessary repeated installation of the same packages across projects. Once the container is built, the script will search for an open port and start the container with the particular port exposed, and the current user's home directory will be mounted at /`home/rstudio/`. Running the script multiple times will launch multiple different RStudio instances each on its own port.
+
+### Example output
+```
+$ bash docker-rstudio-renv.sh 
+Sending build context to Docker daemon  3.072kB
+Step 1/7 : FROM rocker/rstudio:4.0.3
+4.0.3: Pulling from rocker/rstudio
+
+... lines removed ...
+
+Successfully built a7343a1294e2
+Successfully tagged rstudio_r4.0.3:latest
+5df65918a44d13b47e441c8c0f4be243beee18e822ab315bfd6b6095f561243e
+
+Launch RStudio through a browser at one of these adresses:
+http://127.0.0.1:8787 (this machine only)
+http://192.168.0.4:8787
+
+Username: rstudio
+Password: supersafepassword
+```
+
+As noted above, just launch RStudio through a browser at the particular address and log in with the super safe password. Enjoy your 100% reproducible and portable R session.
