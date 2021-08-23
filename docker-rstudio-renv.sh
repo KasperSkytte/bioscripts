@@ -11,9 +11,11 @@ RENV_PATHS_CACHE_CONTAINER="/usr/local/lib/R/renv-cache/" #path to renv cache wi
 num_threads=$(($(nproc) - 2)) #all cores except 2
 #done setting variables
 
-mkdir -p docker
+echo "Creating temporary folder for the Dockerfile..."
+tmpdir=$(mktemp -dt "${image_name}_XXXXX")
+pushd "$tmpdir" > /dev/null
 
-cat << Dockerfile > docker/Dockerfile
+cat << Dockerfile > Dockerfile
 FROM rocker/rstudio:${r_ver}
 
 #multithreaded make
@@ -48,7 +50,10 @@ RUN echo "RENV_PATHS_CACHE=${RENV_PATHS_CACHE_CONTAINER}" >> /usr/local/lib/R/et
 VOLUME /root
 Dockerfile
 
-docker build -t "${image_name}" docker/
+docker build -t "${image_name}" .
+
+echo "Removing temporary folder..."
+popd > /dev/null && rm -rf "$tmpdir"
 
 checkPort() {
   randomPort() {

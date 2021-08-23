@@ -70,6 +70,12 @@ Options:
 ## [docker-rstudio-renv.sh](https://github.com/KasperSkytte/bioscripts/blob/main/docker-rstudio-renv.sh)
 Builds and launches an RStudio docker container based on a specific R version of your choice. The image is based on the [rocker/rstudio](https://hub.docker.com/r/rocker/rstudio) image with some extra nice-to-have system dependencies like `libxml2-dev`, `libcairo2-dev`, `libxt-dev`, and more, which are often needed by some R packages. It has built-in support for [`renv`](https://rstudio.github.io/renv/) set up with a global package cache on the host at `${HOME}/.local/share/renv/cache` (default) to avoid unnecessary repeated installation of the same packages across projects. Once the container is built, the script will search for an open port and start the container with the particular port exposed, and the current user's home directory will be mounted at /`home/rstudio/`. Running the script multiple times will launch multiple different RStudio instances each on its own port.
 
+To build and start a container with for example R version 4.0.3, either download the script and run `bash docker-rstudio-renv.sh 4.0.3`, or source the script directly from this repo with this one-liner (If you trust me! Always inspect scripts you download before running them!):
+
+```
+curl -fsSL https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/docker-rstudio-renv.sh | bash -s 4.0.3
+```
+
 ### Example output
 ```
 $ bash docker-rstudio-renv.sh 4.0.3
