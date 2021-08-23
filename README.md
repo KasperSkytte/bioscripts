@@ -72,7 +72,7 @@ Builds and launches an RStudio docker container based on a specific R version of
 
 ### Example output
 ```
-$ bash docker-rstudio-renv.sh 
+$ bash docker-rstudio-renv.sh 4.0.3
 Sending build context to Docker daemon  3.072kB
 Step 1/7 : FROM rocker/rstudio:4.0.3
 4.0.3: Pulling from rocker/rstudio
