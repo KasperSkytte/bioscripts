@@ -2,7 +2,7 @@
 set -eu
 
 #set variables
-r_ver="${1:-"4.0.3"}"
+r_ver="${1:-"latest"}"
 image_name="rstudio_r${r_ver}"
 password="supersafepassword"
 port="8787" #will generate a random one if unavailable
