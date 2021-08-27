@@ -3,9 +3,9 @@ set -eu
 
 #set variables
 r_ver="${1:-"latest"}"
-image_name="rstudio_r${r_ver}"
-password="supersafepassword"
-port="8787" #will generate a random one if unavailable
+image_name="${image_name:-rstudio_r${r_ver}}"
+password="${password:-supersafepassword}"
+port="${port:-8787}" #will generate a random one if unavailable
 RENV_PATHS_CACHE_HOST="${HOME}/.local/share/renv/cache" #path to renv cache on host, renv default is ~/.local/share/renv/cache
 RENV_PATHS_CACHE_CONTAINER="/usr/local/lib/R/renv-cache/" #path to renv cache within the container (dont have to change)
 num_threads=$(($(nproc) - 2)) #all cores except 2

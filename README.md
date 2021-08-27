@@ -76,7 +76,7 @@ To build and start a container with for example R version 4.0.3, either download
 curl -fsSL https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/docker-rstudio-renv.sh | bash -s 4.0.3
 ```
 
-For the latest R version just ommit any arguments.
+For the latest R version just ommit any arguments. A few additional environment variables can be set before running the script to adjust things: image_name, password, and port. Otherwise default values will be used.
 
 ### Example output
 ```
