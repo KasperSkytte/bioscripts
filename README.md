@@ -53,15 +53,14 @@ Finding and copying 5 sample(s)...
 ```
 
 ## install_singularity.sh
-Installs singularity (currently v3.6.3 using go v1.14.1) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the singularity binary. Tested on Ubuntu18.04 and Ubuntu20.04. If running Ubuntu16.04 or earlier replacing `libgpgme-dev` with `libgpgme11-dev` on this line will likely be needed:
-https://github.com/KasperSkytte/bioscripts/blob/4f65e861eeb7d7201a4b900dddfae21af0bc3b04/install_singularity.sh#L81
+Installs singularity (currently v3.9 using go v1.17.3) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the singularity binary. Only for Ubuntu and Debian based distros
 
 ### Options
 ```
 $ ./install_singularity.sh -h
 This script installs singularity and required system dependencies. If an install folder path is provided with the -p option, singularity will be installed only for the current user within a /singularity subfolder there and the $PATH variable will be permanently updated in ~/.bashrc for the current user. Otherwise will be installed system-wide into /usr/local/singularity.
 Please provide sudo password when asked.
-Version: 1.1
+Version: 1.2.1
 Options:
   -h    Display this help text and exit.
   -p    Path to folder where singularity will be installed (/singularity subfolder will be created). If not provided, will be installed system-wide in /usr/local/singularity.

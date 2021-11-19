@@ -3,7 +3,7 @@
 # License: GNU General Public License v3.0
 set -eu
 
-VERSION="1.2"
+VERSION="1.2.1"
 
 scriptMessage() {
   #check user arguments
@@ -76,28 +76,40 @@ then
     exit 1
   fi
   
-  scriptMessage "installing system dependencies via APT..."
+  scriptMessage "installing system requirements via APT..."
   #first check if installed before running a sudo command
-  pkgs="build-essential uuid-dev uidmap libgpgme-dev squashfs-tools libseccomp-dev wget make pkg-config git cryptsetup-bin net-tools"
+  #ubuntu versions before 2018 need libgpgme11-dev instead of libgpgme-dev
+  ubuntuMajor=$(cat /etc/lsb-release |\
+   grep '^DISTRIB_RELEASE.*' |\
+   grep -o '=[0-9]*\.' |\
+   grep -o '[0-9]*')
+  if [ $ubuntuMajor -lt 18 ]
+  then
+    pkgs="libgpgme11-dev"
+  else
+    pkgs="libgpgme-dev"
+  fi
+  
+  pkgs="${pkgs} build-essential uuid-dev uidmap squashfs-tools libseccomp-dev wget make pkg-config git cryptsetup-bin net-tools"
   if ! dpkg -s $pkgs >/dev/null 2>&1
   then
     echo "One or more system dependencies are not installed, will try to install..."
     sudo apt-get update -qqy
     sudo apt-get install -y $pkgs
   else
-    echo "Everything is already installed..."
+    echo "all requirements are already installed..."
   fi
   
   scriptMessage "creating temporary folder for downloads and build files..."
   tmp_dir=$(mktemp -d -t singularity_installer_XXXXX)
   pushd "$tmp_dir"
   
-  scriptMessage "downloading go..."
-  wget https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+  scriptMessage "downloading go1.17.3..."
+  wget https://golang.org/dl/go1.17.3.linux-amd64.tar.gz
 
   scriptMessage "unpacking go..."
-  tar -zxf go1.14.1.linux-amd64.tar.gz
-  rm -f go1.14.1.linux-amd64.tar.gz
+  tar -zxf go1.17.3.linux-amd64.tar.gz
+  rm -f go1.17.3.linux-amd64.tar.gz
 
   #go is only needed for compiling singularity
   export GOPATH=${PWD}/go
@@ -107,7 +119,7 @@ then
   scriptMessage "downloading singularity..."
   git clone https://github.com/sylabs/singularity.git singularity
   pushd singularity
-  git checkout v3.6.3
+  git checkout v3.9.0
   
   if [ -n "$installDir" ]
   then
