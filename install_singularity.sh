@@ -17,16 +17,15 @@ scriptMessage() {
 
 #default error message if bad usage
 usageError() {
-  local self
-  self=$(basename "$0")
   echo "Invalid usage: $1" 1>&2
   echo ""
-  echo "Run 'bash $self -h' for help"
+  eval "bash $0 -h"
 }
+
 
 #help text
 description() {
-  echo "This script installs singularity and required system dependencies. If an install folder path is provided with the -p option, singularity will be installed only for the current user within a /singularity subfolder there and the \$PATH variable will be permanently updated in ~/.bashrc for the current user. Otherwise will be installed system-wide into /usr/local/singularity."
+  echo "This script installs singularity v3.9.0. By default for all users in /usr/local/singularity. To install for the current user only provide a (writable) path with the -p option. This also assumes that all system dependencies are already installed."
   echo "Please provide sudo password when asked."
 }
 
@@ -43,7 +42,7 @@ then
       echo "Version: $VERSION"
       echo "Options:"
       echo "  -h    Display this help text and exit."
-      echo "  -p    Path to folder where singularity will be installed (/singularity subfolder will be created). If not provided, will be installed system-wide in /usr/local/singularity."
+      echo "  -p    Path to folder where singularity will be installed (/singularity subfolder will be created). If not provided, will be installed system-wide for all users in /usr/local/singularity."
       exit 1
       ;;
     p )
@@ -51,7 +50,7 @@ then
       mkdir -p "$installDir"
       if [ ! -w "$installDir" ]
       then
-        echo "Destination folder ${installDir} is not writable, exiting..."
+        usageError "Destination folder ${installDir} is not writable, exiting..."
         exit 1
       fi
       ;;
@@ -67,15 +66,14 @@ then
   done
   shift $((OPTIND -1)) #reset option pointer
   description
-  echo ""
-  echo "Hit enter to continue..."
-
-  read -n 1 key
-  if [ "$key" != "" ]; then
-    echo "Exiting..."
-    exit 1
-  fi
   
+  #sleep if interactive to be able to read message
+  if [ -n "$PS1" ]
+  then
+    echo "sleeping for 10 seconds"
+    sleep 10
+  fi
+
   scriptMessage "installing system requirements via APT..."
   #first check if installed before running a sudo command
   #ubuntu versions before 2018 need libgpgme11-dev instead of libgpgme-dev
