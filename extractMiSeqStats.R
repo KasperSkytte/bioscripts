@@ -1,3 +1,7 @@
+#this script scans for all STATS files recursively 
+#in Illumina MiSeq run folders, extracts the sample table
+#from the [Data] part of the file, then creates a data.table
+#for each file found and merges them all into 1 big data.table
 extractMiSeqStats <- function(path = ".") {
 	if(!require("data.table"))
 	  install.packages("data.table")
