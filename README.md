@@ -23,9 +23,10 @@ R script used to create a SINTAX formatted taxonomic database (FASTA file with f
 ## findCopyFastq.sh
 BASH script to search for fastq files and copy to a folder for further analysis. Initially made to find Illumina MiSeq/HiSeq samples, but can be applied to anything else. 
 
-### Options
+### Usage
 ```
-$ ./findCopyFastq.sh -h
+$ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/findCopyFastq.sh
+$ bash findCopyFastq.sh -h
 Find and copy fastq files. Reports for each sample how many files were found and copied.
 Options:
   -h    Display this help text and exit.
@@ -41,7 +42,7 @@ Options:
 
 ### Example output
 ```
-$ ./findCopyFastq.sh
+$ bash findCopyFastq.sh
 Finding and copying 5 sample(s)...
 (1/5) MQ200204-1:  2 file(s)
 (2/5) MQ200204-2:  2 file(s)
@@ -55,9 +56,10 @@ Finding and copying 5 sample(s)...
 ## install_singularity.sh
 Installs singularity (currently v3.9 using go v1.17.3) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the singularity binary. Only for Ubuntu and Debian based distros
 
-### Options
+### Usage
 ```
-$ ./install_singularity.sh -h
+$ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/install_singularity.sh
+$ bash install_singularity.sh -h
 This script installs singularity and required system dependencies. If an install folder path is provided with the -p option, singularity will be installed only for the current user within a /singularity subfolder there and the $PATH variable will be permanently updated in ~/.bashrc for the current user. Otherwise will be installed system-wide into /usr/local/singularity.
 Please provide sudo password when asked.
 Version: 1.2.1
