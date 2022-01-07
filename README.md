@@ -36,6 +36,7 @@ Options:
           (Default: /space/sequences/Illumina/)
   -o    (Required) Output folder to copy fastq files into. 
           (Default: fastq)
+  -d    (flag) Don't copy the files, instead only report whether they are found or not.
   -s    Separator to append after sample name. 
           (Default: _)
 ```
@@ -43,12 +44,13 @@ Options:
 ### Example output
 ```
 $ bash findCopyFastq.sh
-Finding and copying 5 sample(s)...
-(1/5) MQ200204-1:  2 file(s)
-(2/5) MQ200204-2:  2 file(s)
-(3/5) MQ200204-3:  2 file(s)
-(4/5) MQ200204-11:  2 file(s)
-(5/5) test-123:  0 file(s)
+Searching for 5 sample(s) in /space/sequences/Illumina/...
+Copying files into fastq
+(1/5) MQ200204-1:  2 file(s) found and copied
+(2/5) MQ200204-2:  2 file(s) found and copied
+(3/5) MQ200204-3:  2 file(s) found and copied
+(4/5) MQ200204-11:  2 file(s) found and copied
+(5/5) test-123:  0 file(s) found and copied
 
 1 sample(s) couldn't be found
 ```

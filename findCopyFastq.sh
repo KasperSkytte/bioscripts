@@ -6,6 +6,7 @@ fastq="/space/sequences/Illumina/"
 input="samples"
 output="fastq"
 samplesep="_"
+doCopy="yes"
 
 #default error message if bad usage
 usageError() {
@@ -14,7 +15,7 @@ usageError() {
   eval "bash $0 -h"
 }
 
-while getopts ":hi:f:o:s:" opt
+while getopts ":hi:f:o:s:d" opt
 do
 case ${opt} in
   h )
@@ -24,6 +25,7 @@ case ${opt} in
     echo -e "  -i    (Required) Path to file containing sample ID's to find and copy. One sample ID per line. \n          (Default: ${input})"
     echo -e "  -f    (Required) Path to folder containing fastq files (will be searched recursively). \n          (Default: ${fastq})"
     echo -e "  -o    (Required) Output folder to copy fastq files into. \n          (Default: ${output})"
+    echo -e "  -d    (flag) Don't copy the files, instead only report whether they are found or not."
     echo -e "  -s    Separator to append after sample name. \n          (Default: ${samplesep})"
     exit 1
     ;;
@@ -39,6 +41,9 @@ case ${opt} in
   s )
     samplesep="$OPTARG"
     ;;
+  d )
+    doCopy="no"
+  ;;
   \? )
     usageError "Invalid Option: -$OPTARG"
     exit 1
@@ -71,18 +76,29 @@ mkdir -p "$output"
   sed -e '/^$/d' -e 's/ //g' > "${output}/samples.txt"
 
 nsamples=$(wc -w < "${output}/samples.txt")
-echo "Finding and copying ${nsamples} sample(s)..."
+echo "Searching for ${nsamples} sample(s) in $fastq..."
+if [ $doCopy == "yes" ]
+then
+  echo "Copying files into $(realpath -m $output)"
+fi
 i=0
 notFound=0
 while ((i++)); read -r sample
 do
   echo -n "($i/$nsamples) $sample:  "
-  fileStatus=$(find "$fastq" -type f -name "*${sample}${samplesep}*.f*q*" -print -exec cp {} -t "$output" \; | wc -l)
+  if [ $doCopy == "no" ]
+  then
+    fileStatus=$(find "$fastq" -type f -name "*${sample}${samplesep}*.f*q*" | wc -l)
+    echo "$fileStatus file(s) found"
+  elif [ $doCopy == "yes" ]
+  then
+    fileStatus=$(find "$fastq" -type f -name "*${sample}${samplesep}*.f*q*" -print -exec cp {} -t "$output" \; | wc -l)
+    echo "$fileStatus file(s) found and copied"
+  fi
   if [ "$fileStatus" -eq 0 ]
   then
     ((notFound=notFound+1))
   fi
-  echo "$fileStatus file(s)"
 done < "${output}/samples.txt"
 
 echo
