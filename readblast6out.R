@@ -6,6 +6,7 @@ readblast6out <- function(file, ...) {
     file, 
     header = FALSE,
     fill = TRUE,
+    sep = "\t",
     col.names = c("query", 
                   "target",
                   "id", 
@@ -17,7 +18,7 @@ readblast6out <- function(file, ...) {
                   "target_start",
                   "target_end",
                   "evalue",
-                  "bitscore"),
+                  "bitscore")
     ...)
   return(x)
 }
