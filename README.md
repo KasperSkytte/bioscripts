@@ -3,19 +3,47 @@ Table of Contents
 
    * [Table of Contents](#table-of-contents)
    * [bioscripts](#bioscripts)
+      * [cutadapt_demultiplex.sh](#cutadapt_demultiplexsh)
+         * [Usage](#usage)
       * [QIIMEToSINTAXFASTA.R](#qiimetosintaxfastar)
       * [findCopyFastq.sh](#findcopyfastqsh)
-         * [Options](#options)
+         * [Usage](#usage-1)
          * [Example output](#example-output)
       * [install_singularity.sh](#install_singularitysh)
-         * [Options](#options-1)
+         * [Usage](#usage-2)
       * [docker-rstudio-renv.sh](#docker-rstudio-renvsh)
          * [Example output](#example-output-1)
+   * [Table of Contents](#table-of-contents-1)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 # bioscripts
-Miscellaneous bioinformatic helper scripts for various tasks. I recommend only using those documented below, otherwise inspect and use at your own risk, guessing what they do. I will find time at some point to go through the rest, but for now they are just here to have a home.
+Miscellaneous bioinformatic helper scripts for various tasks. I recommend only using those documented below, otherwise inspect and use at your own risk, guessing what they do. I will find time at some point to go through the rest, but for now they are just here to have a home. 
+
+**Always inspect scripts before running them!**
+
+## cutadapt_demultiplex.sh
+Demultiplex reads using `cutadapt` based on a fasta file with barcodes. Creates a subfolder for each barcode name in the fasta file and outputs all demultiplexed reads to a single file there with the same file extension as the input file. The input file must be a single file with all reads in either `fastq` or `fasta` format, `gz` compressed or not.
+
+### Installation and usage
+```
+$ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/cutadapt_demultiplex.sh
+$ bash cutadapt_demultiplex.sh -h
+Creates a subfolder for each barcode sequence in a fasta file and demultiplexes the input file using cutadapt based on the barcode file. Check the cutadapt command manually if it makes sense for your data.
+version: 1.0
+Options:
+  -h    Display this help text and exit.
+  -v    Print version and exit.
+  -i    (required) Input fastq or fasta file, compressed or not.
+  -o    (required) Output folder.
+  -b    (required) Fasta file with barcode sequences.
+  -t    Max number of max_threads to use. (Default: all available except 2)
+```
+
+### Example
+```
+$ bash cutadapt_demultiplex.sh -i fastq_pass/unclassified/allreads.fastq.gz -o fastq_pass/ -b barcodes.fa 
+```
 
 ## QIIMEToSINTAXFASTA.R
 R script used to create a SINTAX formatted taxonomic database (FASTA file with formatted headers) for use with the [usearch](https://drive5.com/usearch/) pipeline. The input should be two files: a FASTA file where headers only contain a single sequence ID, and a tab-separated text file with the taxonomy, where the first column contains the sequence ID's matching those in the FASTA file, and the second column the taxonomy string for each sequence ID in QIIME format. The script then reformats the taxonomy strings to match the [SINTAX taxonomy annotation format](http://drive5.com/usearch/manual/tax_annot.html), adds them to the FASTA headers and writes out. To use the script, just source it directly from GitHub in R with `source("https://raw.githubusercontent.com/KasperSkytte/bioscripts/master/QIIMEToSINTAXFASTA.R")`. It will check for required packages, but will not install any. For installing Bioconductor packages use `BiocManager::install()`.
@@ -23,7 +51,7 @@ R script used to create a SINTAX formatted taxonomic database (FASTA file with f
 ## findCopyFastq.sh
 BASH script to search for fastq files and copy to a folder for further analysis. Initially made to find Illumina MiSeq/HiSeq samples, but can be applied to anything else. 
 
-### Usage
+### Installation and usage
 ```
 $ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/findCopyFastq.sh
 $ bash findCopyFastq.sh -h
@@ -58,7 +86,7 @@ Copying files into fastq
 ## install_singularity.sh
 Installs singularity (currently v3.9 using go v1.17.3) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the singularity binary. Only for Ubuntu and Debian based distros
 
-### Usage
+### Installation and usage
 ```
 $ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/install_singularity.sh
 $ bash install_singularity.sh -h
@@ -73,7 +101,7 @@ Options:
 ## docker-rstudio-renv.sh
 Builds and launches an RStudio docker container based on a specific R version of your choice. The image is based on the [rocker/rstudio](https://hub.docker.com/r/rocker/rstudio) image with some extra nice-to-have system dependencies like `libxml2-dev`, `libcairo2-dev`, `libxt-dev`, and more, which are often needed by some R packages. It has built-in support for [`renv`](https://rstudio.github.io/renv/) set up with a global package cache on the host at `${HOME}/.local/share/renv/cache` (default) to avoid unnecessary repeated installation of the same packages across projects. Once the container is built, the script will search for an open port and start the container with the particular port exposed, and the current user's home directory will be mounted at /`home/rstudio/`. Running the script multiple times will launch multiple different RStudio instances each on its own port.
 
-To build and start a container with for example R version 4.0.3, either download the script and run `bash docker-rstudio-renv.sh 4.0.3`, or source the script directly from this repo with this one-liner (If you trust me! Always inspect scripts you download before running them!):
+To build and start a container with for example R version 4.0.3, either download the script and run `bash docker-rstudio-renv.sh 4.0.3`, or source the script directly from this repo with this one-liner:
 
 ```
 curl -fsSL https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/docker-rstudio-renv.sh | bash -s 4.0.3
