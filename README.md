@@ -1,19 +1,21 @@
 Table of Contents
 =================
 
-   * [Table of Contents](#table-of-contents)
-   * [bioscripts](#bioscripts)
-      * [cutadapt_demultiplex.sh](#cutadapt_demultiplexsh)
-         * [Usage](#usage)
-      * [QIIMEToSINTAXFASTA.R](#qiimetosintaxfastar)
-      * [findCopyFastq.sh](#findcopyfastqsh)
-         * [Usage](#usage-1)
-         * [Example output](#example-output)
-      * [install_singularity.sh](#install_singularitysh)
-         * [Usage](#usage-2)
-      * [docker-rstudio-renv.sh](#docker-rstudio-renvsh)
-         * [Example output](#example-output-1)
-   * [Table of Contents](#table-of-contents-1)
+* [bioscripts](#bioscripts)
+   * [cutadapt_demultiplex.sh](#cutadapt_demultiplexsh)
+      * [Installation and usage](#installation-and-usage)
+      * [Example](#example)
+   * [QIIMEToSINTAXFASTA.R](#qiimetosintaxfastar)
+   * [findCopyFastq.sh](#findcopyfastqsh)
+      * [Installation and usage](#installation-and-usage-1)
+      * [Example output](#example-output)
+   * [install_singularity.sh](#install_singularitysh)
+      * [Installation and usage](#installation-and-usage-2)
+   * [docker-rstudio-renv.sh](#docker-rstudio-renvsh)
+      * [Example output](#example-output-1)
+   * [parallel_usearch_global](#parallel_usearch_global)
+      * [Installation and usage](#installation-and-usage-3)
+* [Table of Contents](#table-of-contents)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
@@ -131,3 +133,45 @@ Password: supersafepassword
 ```
 
 As noted above, just launch RStudio through a browser at the particular address and log in with the super safe password. Enjoy your 100% reproducible and portable R session.
+
+## parallel_usearch_global
+`usearch -usearch_global` does not scale linearly with the number of threads,
+it's orders of magnitude faster to split into smaller jobs and run in parallel using
+GNU parallel, then concatenate results afterwards.
+
+### Installation and usage
+The script can be either run as a standalone script or sourced as a function for use in another BASH script as part of a pipeline. Currently only outputs in `blast6out` format, but can easily be adapted to something else.
+
+```
+$ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/parallel_usearch_global.sh
+$ bash parallel_usearch_global.sh -h
+Runs usearch11 -usearch_global in parallel by splitting the input data and process in smaller chunks. Much faster than just using more threads with one command.
+Options:
+  -h    Display this help text and exit.
+  -v    Print version and exit.
+  -i    (required) Input file name.
+  -o    (required) Output file name.
+  -d    (required) Database file.
+  -a    Additional arguments passed on to the usearch11 -usearch_global command as one quoted string, fx: -a "-maxrejects 8 -strand plus"
+  -t    Max number of max_threads to use. (Default: all available except 2)
+```
+
+or when sourced from another script it will be available as a function call:
+
+`script.sh`:
+```
+#!/usr/bin/env bash
+
+#load function
+. parallel_usearch_global.sh
+
+#run usearch_global in parallel
+parallel_usearch_global \
+  -i inputseqs.fa \
+  -o test.b6 \
+  -d databasefile.fa \
+  -t 10 \
+  -a "-id 0.99 -maxaccepts 8 -maxrejects 32 -strand plus"
+
+#some other steps based on the search...
+```
