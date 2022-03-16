@@ -1,8 +1,12 @@
-reqPkgs <- c("Biostrings", "data.table", "stringi")
-if(!all(reqPkgs %in% installed.packages()[,"Package"]))
-  stop("sintaxToDT() requires the following packages:\n", paste(reqPkgs, collapse = "\n"), call. = FALSE)
-       
 sintaxToDT <- function(file) {
+  req_pkgs <- c("Biostrings", "data.table", "stringi")
+  pkg_status <- lapply(req_pkgs, require, character.only = TRUE)
+  if (!all(unlist(pkg_status))) {
+    stop(
+      "The following packages are required, please install manually:\n",
+      paste(req_pkgs, collapse = "\n"), call. = FALSE
+    )
+  }
   fasta_stats <- Biostrings::fasta.index(file)
   tax <- data.table::data.table(header = stringi::stri_replace_all_regex(fasta_stats[["desc"]], pattern = ";$", ""))
   tax[, ID := as.character(stringi::stri_extract_all_regex(header, "^[^;]*"))]

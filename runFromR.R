@@ -1,6 +1,12 @@
-if(!require("processx"))
-  install.packages("processx"); require("processx")
 runFromR <- function(command, args) {
+  req_pkgs <- c("processx")
+  pkg_status <- lapply(req_pkgs, require, character.only = TRUE)
+  if (!all(unlist(pkg_status))) {
+    stop(
+      "The following packages are required, please install manually:\n",
+      paste(req_pkgs, collapse = "\n"), call. = FALSE
+    )
+  }
   env = c(
     PATH = "/home/kapper/Software/bin:
           /home/kapper/Software/miniconda3/bin:

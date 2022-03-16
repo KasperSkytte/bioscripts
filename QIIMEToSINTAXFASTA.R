@@ -1,8 +1,12 @@
-reqPkgs <- c("Biostrings", "data.table", "stringr")
-if(!all(reqPkgs %in% installed.packages()[,"Package"]))
-  stop("QIIMEToSINTAXFASTA() requires the following packages:\n", paste(reqPkgs, collapse = "\n"), call. = FALSE)
-
 QIIMEToSINTAXFASTA <- function(fasta, tax, file = "file_w_sintax.fa", ...) {
+  req_pkgs <- c("Biostrings", "data.table", "stringr")
+  pkg_status <- lapply(req_pkgs, require, character.only = TRUE)
+  if (!all(unlist(pkg_status))) {
+    stop(
+      "The following packages are required, please install manually:\n",
+      paste(req_pkgs, collapse = "\n"), call. = FALSE
+    )
+  }
   seqs <- Biostrings::readBStringSet(fasta)
   taxonomy <- data.table::fread(tax, 
                                 fill = TRUE,

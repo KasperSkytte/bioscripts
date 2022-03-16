@@ -1,11 +1,11 @@
 QIIMEtoR <- function(filepath) {
-  if(!require("data.table")) {
-    install.packages("data.table")
-    require("data.table")
-  }
-  if(!require("stringi")) {
-    install.packages("stringi")
-    require("stringi")
+  req_pkgs <- c("data.table", "stringi")
+  pkg_status <- lapply(req_pkgs, require, character.only = TRUE)
+  if (!all(unlist(pkg_status))) {
+    stop(
+      "The following packages are required, please install manually:\n",
+      paste(req_pkgs, collapse = "\n"), call. = FALSE
+    )
   }
   tax <- data.table::fread(filepath,
                            sep = "\t",

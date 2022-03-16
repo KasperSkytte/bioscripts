@@ -1,8 +1,12 @@
-reqPkgs <- c("processx", "data.table", "stringi")
-if(!all(reqPkgs %in% installed.packages()[,"Package"]))
-  stop("diffToR() requires the following packages:\n", paste(reqPkgs, collapse = "\n"), call. = FALSE)
-
 diffToR <- function(file1, file2, echo_cmd = TRUE) {
+  req_pkgs <- c("processx", "data.table", "stringi")
+  pkg_status <- lapply(req_pkgs, require, character.only = TRUE)
+  if (!all(unlist(pkg_status))) {
+    stop(
+      "The following packages are required, please install manually:\n",
+      paste(req_pkgs, collapse = "\n"), call. = FALSE
+    )
+  }
   if(.Platform$OS.type != "unix")
     stop("Function can only be used on unix systems that also has diff installed", call. = FALSE)
   

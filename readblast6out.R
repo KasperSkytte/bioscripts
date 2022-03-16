@@ -1,16 +1,21 @@
 readblast6out <- function(file, ...) {
-  if(!require("data.table"))
-  install.packages("data.table")
-
+  req_pkgs <- c("data.table")
+  pkg_status <- lapply(req_pkgs, require, character.only = TRUE)
+  if (!all(unlist(pkg_status))) {
+    stop(
+      "The following packages are required, please install manually:\n",
+      paste(req_pkgs, collapse = "\n"), call. = FALSE
+    )
+  }
   x <- data.table::fread(
-    file, 
+    file,
     header = FALSE,
     fill = TRUE,
     sep = "\t",
-    col.names = c("query", 
+    col.names = c("query",
                   "target",
-                  "id", 
-                  "aln_length", 
+                  "id",
+                  "aln_length",
                   "n_missmatch",
                   "n_gapopen",
                   "query_start",
@@ -18,7 +23,7 @@ readblast6out <- function(file, ...) {
                   "target_start",
                   "target_end",
                   "evalue",
-                  "bitscore")
+                  "bitscore"),
     ...)
   return(x)
 }
