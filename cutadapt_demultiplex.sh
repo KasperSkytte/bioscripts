@@ -132,13 +132,14 @@ awk '/^>/ {gsub("^>", ""); print $0}' \
       "${output_folder}/unknown"
 
 # filter barcodes and demultiplex
-# extract file extension(s) from input file and use the same for output file
+# extract file extension(s) from input file and use the same for output file, always without .gz
+outputfilename="$(basename -s .gz allreads.${input_file#*.})"
 cutadapt \
   -e 0.05 \
   -j "${max_threads}" \
   --no-indels \
   --json="${output_folder}/demultiplex.cutadapt.json" \
   -b file:"${barcode_file}" \
-  -o "${output_folder}/{name}/allreads.${input_file#*.}" \
+  -o "${output_folder}/{name}/${outputfilename}" \
   "${input_file}" \
   --quiet
