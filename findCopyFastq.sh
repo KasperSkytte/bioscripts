@@ -102,7 +102,7 @@ do
     then
       #fdfind is just blazing
       $cmd -s \
-        -g "*${sample}${samplesep}*R1*" \
+        -g "*${sample}${samplesep}*" \
         -L \
         -t file -t symlink \
         -e gz -e fastq -e fq \
