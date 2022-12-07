@@ -8,6 +8,12 @@ output="fastq"
 samplesep="_"
 doCopy="yes"
 nfind=${nfind:-2}
+if command -v fdfind 1> /dev/null
+then
+  cmd="fdfind"
+else
+  cmd="find"
+fi
 
 #default error message if bad usage
 usageError() {
@@ -83,47 +89,52 @@ nsamples=$(wc -w < "${output}/samples.txt")
 echo "Searching for ${nsamples} sample(s) in $fastq (only first hits)..."
 if [ $doCopy == "yes" ]
 then
-  echo "Copying files into $(realpath -m $output)"
+  echo "Copying files into $(realpath -m "$output")"
 fi
 i=0
 notFound=0
 while ((i++)); read -r sample
 do
   echo -n "  - ($i/$nsamples) $sample: "
-  if [ $doCopy == "no" ]
-  then
-    #find the sample fastq file
-    #use head -n x to stop find from searching further after the first x hits
-    #use "|| true" to avoid exiting when the find command doesn't 
-    #have permission to access some files/folders
-    fileStatus=$(
-      find -L "$fastq" \
-        -type f \
-        -name "*${sample}${samplesep}*.f*q*" \
-        2> /dev/null |\
-      head -n "$nfind" \
-      || true
-    )
-  elif [ $doCopy == "yes" ]
-  then
-    fileStatus=$(
-      find -L "$fastq" \
-        -type f \
-        -name "*${sample}${samplesep}*.f*q*" \
-        -print \
-        -exec cp {} -t "$output" \; \
-        2> /dev/null |\
-      head -n "$nfind" \
-      || true
-    )
-  fi
+  #find the sample fastq file
+  fileStatus=$(
+    if [ "$cmd" == "fdfind" ]
+    then
+      #fdfind is just blazing
+      $cmd -s \
+        -g "*${sample}${samplesep}*R1*" \
+        -L \
+        -t file -t symlink \
+        -e gz -e fastq -e fq \
+        --max-results 1 \
+        "$fastq"
+    elif [ "$cmd" == "find" ]
+    then
+      #use head -n x to stop find from searching further after the first x hits
+      #use "|| true" to avoid exiting when the find command doesn't 
+      #have permission to access some files/folders
+      $cmd -L "$fastq" \
+          -type f \
+          -name "*${sample}${samplesep}*.f*q*" \
+          2> /dev/null |\
+        head -n "$nfind" \
+        || true
+    fi
+  )
   if [ -z "$fileStatus" ]
   then
     echo "not found"
     ((notFound=notFound+1))
   elif [ -n "$fileStatus" ]
   then
-    echo -e "found at: \n$fileStatus\n"
+    echo -e "found at: \n$fileStatus"
+    if [ $doCopy == "yes" ]
+    then
+      #--max-results can't be used together with --exec, so separate cp command
+      # shellcheck disable=SC2086
+      cp $fileStatus -fvt "$output"
+    fi
+    echo -e "\n"
   fi
 done < "${output}/samples.txt"
 
@@ -132,5 +143,5 @@ if [ "$notFound" != "0" ]
 then
   echo "$notFound sample(s) couldn't be found"
 else
-  echo "All samples were found"
+  echo "All $nsamples samples were found"
 fi
