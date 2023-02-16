@@ -79,12 +79,12 @@ extract_qiimetax <- function(
 
   #trim white spaces and add tax level prefix
   taxonomy[, Kingdom := trimws(paste0("k__", Kingdom))] # nolint
-  taxonomy[, Phylum := trimws(paste0("k__", Phylum))] # nolint
-  taxonomy[, Class := trimws(paste0("k__", Class))] # nolint
-  taxonomy[, Order := trimws(paste0("k__", Order))] # nolint
-  taxonomy[, Family := trimws(paste0("k__", Family))] # nolint
-  taxonomy[, Genus := trimws(paste0("k__", Genus))] # nolint
-  taxonomy[, Species := trimws(paste0("k__", Species))] # nolint
+  taxonomy[, Phylum := trimws(paste0("p__", Phylum))] # nolint
+  taxonomy[, Class := trimws(paste0("c__", Class))] # nolint
+  taxonomy[, Order := trimws(paste0("o__", Order))] # nolint
+  taxonomy[, Family := trimws(paste0("f__", Family))] # nolint
+  taxonomy[, Genus := trimws(paste0("g__", Genus))] # nolint
+  taxonomy[, Species := trimws(paste0("s__", Species))] # nolint
 
   #combine columns again with "; " separator
   qiime_tax <- taxonomy[
