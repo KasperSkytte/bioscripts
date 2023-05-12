@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 # Made by Kasper Skytte Andersen (https://github.com/KasperSkytte)
+# Only for ubuntu/debian 64-bit linux machines
 # License: GNU General Public License v3.0
 set -eu
 
-VERSION="1.2.1"
+VERSION="1.3"
+
+# GO version
+GOVERSION=1.19.3
+
+# singularity/apptainer version
+APPTAINER_VERSION="v1.1.8"
+
+# required system packages for apptainer
+pkgs="build-essential libseccomp-dev pkg-config uidmap squashfs-tools squashfuse fuse2fs fuse-overlayfs fakeroot cryptsetup curl wget git"
 
 scriptMessage() {
   #check user arguments
@@ -22,10 +32,9 @@ usageError() {
   eval "bash $0 -h"
 }
 
-
 #help text
 description() {
-  echo "This script installs singularity v3.9.0. By default for all users in /usr/local/singularity. To install for the current user only provide a (writable) path with the -p option. This also assumes that all system dependencies are already installed."
+  echo "This script installs apptainer/singularity ${APPTAINER_VERSION}. By default for all users in /usr/local/apptainer. To install for the current user only provide a (writable) path with the -p option. This also assumes that all system dependencies are already installed."
   echo "Please provide sudo password when asked."
 }
 
@@ -42,7 +51,7 @@ then
       echo "Version: $VERSION"
       echo "Options:"
       echo "  -h    Display this help text and exit."
-      echo "  -p    Path to folder where singularity will be installed (/singularity subfolder will be created). If not provided, will be installed system-wide for all users in /usr/local/singularity."
+      echo "  -p    Path to folder where apptainer will be installed (/apptainer subfolder will be created). If not provided, will be installed system-wide for all users in /usr/local/apptainer."
       exit 1
       ;;
     p )
@@ -83,12 +92,11 @@ then
    grep -o '[0-9]*')
   if [ $ubuntuMajor -lt 18 ]
   then
-    pkgs="libgpgme11-dev"
+    pkgs="${pkgs} libgpgme11-dev"
   else
-    pkgs="libgpgme-dev"
+    pkgs="${pkgs} libgpgme-dev"
   fi
   
-  pkgs="${pkgs} build-essential uuid-dev uidmap squashfs-tools libseccomp-dev wget make pkg-config git cryptsetup-bin net-tools"
   if ! dpkg -s $pkgs >/dev/null 2>&1
   then
     echo "One or more system dependencies are not installed, will try to install..."
@@ -99,68 +107,68 @@ then
   fi
   
   scriptMessage "creating temporary folder for downloads and build files..."
-  tmp_dir=$(mktemp -d -t singularity_installer_XXXXX)
+  tmp_dir=$(mktemp -d -t apptainer_installer_XXXXX)
   pushd "$tmp_dir"
   
-  scriptMessage "downloading go1.17.3..."
-  wget https://golang.org/dl/go1.17.3.linux-amd64.tar.gz
+  scriptMessage "downloading GO lang..."
+  wget -O go.tar.gz https://dl.google.com/go/go${GOVERSION}.linux-amd64.tar.gz
 
   scriptMessage "unpacking go..."
-  tar -zxf go1.17.3.linux-amd64.tar.gz
-  rm -f go1.17.3.linux-amd64.tar.gz
+  tar -zxf go.tar.gz
+  rm -f go.tar.gz
 
-  #go is only needed for compiling singularity
+  #go is only needed for compiling apptainer
   export GOPATH=${PWD}/go
   export OLDPATH=${PATH} #save for later to avoid also adding Go path to $PATH
   export PATH=${PWD}/go/bin:${PATH}
 
-  scriptMessage "downloading singularity..."
-  git clone https://github.com/sylabs/singularity.git singularity
-  pushd singularity
-  git checkout v3.9.0
+  scriptMessage "downloading apptainer..."
+  git clone https://github.com/apptainer/apptainer.git apptainer
+  pushd apptainer
+  git checkout ${APPTAINER_VERSION}
   
   if [ -n "$installDir" ]
   then
-    scriptMessage "installing singularity into ${installDir}/singularity..."
-    ./mconfig --without-suid --prefix=${installDir}/singularity
+    scriptMessage "installing apptainer into ${installDir}/apptainer..."
+    ./mconfig --without-suid --prefix=${installDir}/apptainer
     make -j -C ./builddir
     make -j -C ./builddir install
 
-    scriptMessage "Adding singularity path to \$PATH and enabling singularity bash auto-completion for current user by adjusting ${HOME}/.bashrc..."
+    scriptMessage "Adding apptainer path to \$PATH and enabling apptainer bash auto-completion for current user by adjusting ${HOME}/.bashrc..."
     #detect and remove lines in ~/.bashrc previously added by this 
     #script to avoid inflating $PATH if script is run more than once
-    sed -i '/# >>> singularity installer >>>/,/# <<< singularity installer <<</d' ${HOME}/.bashrc
+    sed -i '/# >>> apptainer installer >>>/,/# <<< apptainer installer <<</d' ${HOME}/.bashrc
     
     #then add lines
-    echo "# >>> singularity installer >>>" >> ${HOME}/.bashrc
-    echo "#these lines have been added by the install_singularity.sh script" >> ${HOME}/.bashrc
-    echo "export PATH=${installDir}/singularity/bin:$OLDPATH" >> ${HOME}/.bashrc
-    echo ". ${installDir}/singularity/etc/bash_completion.d/singularity" >> ${HOME}/.bashrc
-    echo "# <<< singularity installer <<<" >> ${HOME}/.bashrc
+    echo "# >>> apptainer installer >>>" >> ${HOME}/.bashrc
+    echo "#these lines have been added by the install_apptainer.sh script" >> ${HOME}/.bashrc
+    echo "export PATH=${installDir}/apptainer/bin:$OLDPATH" >> ${HOME}/.bashrc
+    echo ". ${installDir}/apptainer/etc/bash_completion.d/apptainer" >> ${HOME}/.bashrc
+    echo "# <<< apptainer installer <<<" >> ${HOME}/.bashrc
 
     scriptMessage "Removing temporary folder and its contents..."
     chmod -R 777 "$tmp_dir"
     rm -rf "$tmp_dir"
   else
-    scriptMessage "installing singularity system-wide into /usr/local/bin..."
+    scriptMessage "installing apptainer system-wide into /usr/local/bin..."
     ./mconfig
     sudo make -j -C ./builddir
     sudo make -j -C ./builddir install
     
-    scriptMessage "enabling system-wide singularity bash auto-completion by adjusting /etc/profile..."
+    scriptMessage "enabling system-wide apptainer bash auto-completion by adjusting /etc/profile..."
     #detect and remove lines in /etc/profile previously added by this script to avoid inflation
-    sudo sed -i '/# >>> singularity installer >>>/,/# <<< singularity installer <<</d' /etc/profile
+    sudo sed -i '/# >>> apptainer installer >>>/,/# <<< apptainer installer <<</d' /etc/profile
 
     #then add lines
-    echo "# >>> singularity installer >>>" | sudo tee -a /etc/profile
-    echo "#these lines have been added by the install_singularity.sh script" | sudo tee -a /etc/profile
-    echo ". /usr/local/etc/bash_completion.d/singularity" | sudo tee -a /etc/profile
-    echo "# <<< singularity installer <<<" | sudo tee -a /etc/profile
+    echo "# >>> apptainer installer >>>" | sudo tee -a /etc/profile
+    echo "#these lines have been added by the install_apptainer.sh script" | sudo tee -a /etc/profile
+    echo ". /usr/local/etc/bash_completion.d/apptainer" | sudo tee -a /etc/profile
+    echo "# <<< apptainer installer <<<" | sudo tee -a /etc/profile
     
     scriptMessage "Removing temporary folder and its contents..."
     sudo rm -rf "$tmp_dir"
   fi
-  scriptMessage "Done installing. Reload the current shell to enable singularity command auto-completion right away."
+  scriptMessage "Done installing. Reload the current shell to enable apptainer command auto-completion right away."
 else
   echo "Unsupported OS type: ${OS}"
   echo "This script is designed only for Ubuntu or Debian Linux, exiting..."

@@ -11,13 +11,12 @@ Table of Contents
       * [findCopyFastq.sh](#findcopyfastqsh)
          * [Installation and usage](#installation-and-usage-1)
          * [Example output](#example-output)
-      * [install_singularity.sh](#install_singularitysh)
+      * [install_apptainer.sh](#install_apptainersh)
          * [Installation and usage](#installation-and-usage-2)
       * [docker-rstudio-renv.sh](#docker-rstudio-renvsh)
          * [Example output](#example-output-1)
       * [parallel_usearch_global](#parallel_usearch_global)
          * [Installation and usage](#installation-and-usage-3)
-   * [Table of Contents](#table-of-contents-1)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
@@ -90,19 +89,19 @@ Copying files into fastq
 1 sample(s) couldn't be found
 ```
 
-## install_singularity.sh
-Installs singularity (currently v3.9 using go v1.17.3) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the singularity binary. Only for Ubuntu and Debian based distros
+## install_apptainer.sh
+Installs [apptainer](https://apptainer.org) (currently v1.1.8 using go v1.19.3) and required system dependencies (through APT) for it to run. Also updates your `$PATH` in `.bashrc` with the apptainer binary. Only for Ubuntu and Debian based distros
 
 ### Installation and usage
 ```
-$ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/install_singularity.sh
-$ bash install_singularity.sh -h
-This script installs singularity and required system dependencies. If an install folder path is provided with the -p option, singularity will be installed only for the current user within a /singularity subfolder there and the $PATH variable will be permanently updated in ~/.bashrc for the current user. Otherwise will be installed system-wide into /usr/local/singularity.
+$ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/install_apptainer.sh
+$ bash install_apptainer.sh -h
+This script installs apptainer and required system dependencies. If an install folder path is provided with the -p option, apptainer will be installed only for the current user within a /apptainer subfolder there and the $PATH variable will be permanently updated in ~/.bashrc for the current user. Otherwise will be installed system-wide into /usr/local/apptainer.
 Please provide sudo password when asked.
-Version: 1.2.1
+Version: 1.3
 Options:
   -h    Display this help text and exit.
-  -p    Path to folder where singularity will be installed (/singularity subfolder will be created). If not provided, will be installed system-wide in /usr/local/singularity.
+  -p    Path to folder where apptainer will be installed (/apptainer subfolder will be created). If not provided, will be installed system-wide in /usr/local/apptainer.
 ```
 
 ## docker-rstudio-renv.sh
