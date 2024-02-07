@@ -1,5 +1,5 @@
 #!/usr/bin/env R
-#' @title Extract taxonomy from FASTA file and output QIIME formatted taxonomy.
+#' @title Extract taxonomy from FASTA file and output QIIME formatted taxonomy. Made specifically for SILVA, download from https://www.arb-silva.de/no_cache/download/archive/release_138.1/Exports/.
 #' @description extracts taxonomy from fasta sequence headers and outputs a QIIME formatted taxonomy table as well as the sequences without the taxonomy string. Eukaryotes are filtered for now. To keep Eukaryotes everything in between domain+phylum should be removed and only 7 levels kingdom/domain -> species should remain.
 #'
 #' @param input_seqs (Required) Path to input fasta file
