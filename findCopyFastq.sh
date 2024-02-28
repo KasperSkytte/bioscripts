@@ -106,7 +106,7 @@ do
         -L \
         -t file -t symlink \
         -e gz -e fastq -e fq \
-        --max-results 1 \
+        --max-results "$nfind" \
         "$fastq"
     elif [ "$cmd" == "find" ]
     then
