@@ -179,3 +179,6 @@ parallel_usearch_global \
 
 #some other steps based on the search...
 ```
+
+## parallel_usearch_otutab
+Same as `parallel_usearch_global` above. Database is passed on to `-zotus`.
