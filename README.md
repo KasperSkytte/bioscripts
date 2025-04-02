@@ -22,7 +22,7 @@ Table of Contents
     - [Requirements](#requirements)
     - [Usage](#usage)
 
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
 
 # bioscripts
 Miscellaneous bioinformatic helper scripts for various tasks. I recommend only using those documented below, otherwise inspect and use at your own risk, guessing what they do. I will find time at some point to go through the rest, but for now they are just here to have a home. 
