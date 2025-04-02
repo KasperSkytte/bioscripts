@@ -1,22 +1,26 @@
 Table of Contents
 =================
 
-   * [Table of Contents](#table-of-contents)
-   * [bioscripts](#bioscripts)
-      * [cutadapt_demultiplex.sh](#cutadapt_demultiplexsh)
-         * [Installation and usage](#installation-and-usage)
-         * [Example](#example)
-      * [QIIMEToSINTAXFASTA.R](#qiimetosintaxfastar)
-      * [extract_qiimetax.R](#extract_qiimetaxr)
-      * [findCopyFastq.sh](#findcopyfastqsh)
-         * [Installation and usage](#installation-and-usage-1)
-         * [Example output](#example-output)
-      * [install_apptainer.sh](#install_apptainersh)
-         * [Installation and usage](#installation-and-usage-2)
-      * [docker-rstudio-renv.sh](#docker-rstudio-renvsh)
-         * [Example output](#example-output-1)
-      * [parallel_usearch_global](#parallel_usearch_global)
-         * [Installation and usage](#installation-and-usage-3)
+- [Table of Contents](#table-of-contents)
+- [bioscripts](#bioscripts)
+  - [cutadapt\_demultiplex.sh](#cutadapt_demultiplexsh)
+    - [Installation and usage](#installation-and-usage)
+    - [Example](#example)
+  - [QIIMEToSINTAXFASTA.R](#qiimetosintaxfastar)
+  - [extract\_qiimetax.R](#extract_qiimetaxr)
+  - [findCopyFastq.sh](#findcopyfastqsh)
+    - [Installation and usage](#installation-and-usage-1)
+    - [Example output](#example-output)
+  - [install\_apptainer.sh](#install_apptainersh)
+    - [Installation and usage](#installation-and-usage-2)
+  - [docker-rstudio-renv.sh](#docker-rstudio-renvsh)
+    - [Example output](#example-output-1)
+  - [parallel\_usearch\_global.sh](#parallel_usearch_globalsh)
+    - [Installation and usage](#installation-and-usage-3)
+  - [parallel\_usearch\_otutab.sh](#parallel_usearch_otutabsh)
+  - [live-basecalling.sh](#live-basecallingsh)
+    - [Requirements](#requirements)
+    - [Usage](#usage)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
@@ -138,7 +142,7 @@ Password: supersafepassword
 
 As noted above, just launch RStudio through a browser at the particular address and log in with the super safe password. Enjoy your 100% reproducible and portable R session.
 
-## parallel_usearch_global
+## parallel_usearch_global.sh
 `usearch -usearch_global` does not scale linearly with the number of threads,
 it's orders of magnitude faster to split into smaller jobs and run in parallel using
 GNU parallel, then concatenate results afterwards.
@@ -180,5 +184,28 @@ parallel_usearch_global \
 #some other steps based on the search...
 ```
 
-## parallel_usearch_otutab
+## parallel_usearch_otutab.sh
 Same as `parallel_usearch_global` above. Database is passed on to `-zotus`.
+
+## live-basecalling.sh
+Script to perform pseudo-live basecalling from ONT sequencing platforms. Usually the dorado basecall server provided with the MinKNOW software is outdated, so with this script you can perform pseudo-live basecalling using any version of your choosing. Disable basecalling when starting a run in MinKNOW and stop the dorado service with `sudo systemctl stop doradod` before using it. The script works by simply looking in the output folder that you choose in MinKNOW, moves any new pod5 files into a temporary folder, perform basecalling on those files, and then look for new pod5 files again. This loop will continue until no new files have been output for a specified timeout. The script will also demultiplex.
+
+### Requirements
+ - `dorado` (https://github.com/nanoporetech/dorado/) 
+ - `rename` (install using fx `sudo apt-get install rename` on Ubuntu/Debian-based distros)
+
+### Usage
+```
+$ wget https://raw.githubusercontent.com/KasperSkytte/bioscripts/main/live-basecalling.sh
+$ bash live-basecalling.sh -h
+Live basecalling and demultiplexing using dorado. The input folder will be checked for new pod5 files every minute until timeout reached.
+Version: 1.0
+Options:
+  -h    Display this help text and exit.
+  -i    (required) Input folder containing pod5 files.
+  -o    (required) Output folder to contain the demultiplexed FASTQ files. Contents will be overridden if any.
+  -m    Dorado model, fast/hac/sup. (Default: sup)
+  -k    Kit name for demultiplexing. (Default: SQK-RBK114-96)
+  -t    Max number of threads to use when demultiplexing. (Default: 14)
+  -v    Print version and exit.
+```
