@@ -14,14 +14,14 @@ parallel_usearch_otutab() {
   while getopts ":hi:o:d:t:a:" opt; do
     case ${opt} in
       h )
-      echo "Runs usearch11 -usearch_global in parallel by splitting the input data and process in smaller chunks. Much faster than just using more threads with one command."
+      echo "Runs usearch -usearch_global in parallel by splitting the input data and process in smaller chunks. Much faster than just using more threads with one command."
       echo "Options:"
       echo "  -h    Display this help text and exit."
       echo "  -v    Print version and exit."
       echo "  -i    (required) Input file name."
       echo "  -o    (required) Output file name."
       echo "  -d    (required) Database file."
-      echo "  -a    Additional arguments passed on to the usearch11 -usearch_global command as one quoted string, fx: -a \"-maxrejects 8 -strand plus\""
+      echo "  -a    Additional arguments passed on to the usearch -usearch_global command as one quoted string, fx: -a \"-maxrejects 8 -strand plus\""
       echo "  -t    Max number of max_threads to use. (Default: all available except 2)"
       exit 1
       ;;
@@ -68,7 +68,7 @@ parallel_usearch_otutab() {
     exit 1
   fi
   
-  #usearch11 -otutab does not scale linearly with the number of threads
+  #usearch -otutab does not scale linearly with the number of threads
   #much faster to split into smaller chunks and run in parallel using
   # GNU parallel and then merge tables afterwards
   jobs=$((( maxthreads / chunksize )))
@@ -79,15 +79,15 @@ parallel_usearch_otutab() {
     mkdir -p "${tmpsplitdir}"
 
     #minus 1 job because of leftover seqs from equal split
-    usearch11 -fastx_split "${input}" \
+    usearch -fastx_split "${input}" \
       -splits $((jobs - 1)) \
       -outname "${tmpsplitdir}/seqs_@.fa" \
       -quiet
 
     echo "  - Running ${jobs} jobs using max ${chunksize} threads each ($(((jobs * chunksize))) total)"
-    #run a usearch11 -otutab command for each file
+    #run a usearch -otutab command for each file
     find "${tmpsplitdir}" -type f -name 'seqs_*.fa' |\
-      parallel --progress usearch11 -otutab {} \
+      parallel --progress usearch -otutab {} \
         -zotus "${database}" \
         -otutabout "{.}_asvtab.tsv" \
         -threads "$chunksize" \
@@ -112,10 +112,10 @@ parallel_usearch_otutab() {
     done < <(find "$tmpsplitdir" -type f -iname '*_asvtab.tsv' -print0)
 
     #merge asvtables
-    usearch11 -otutab_merge "$asvtabslist" -output "${output}" -quiet
+    usearch -otutab_merge "$asvtabslist" -output "${output}" -quiet
   else
     #dont run in parallel if maxthreads <= 2*chunksize
-    usearch11 -otutab \
+    usearch -otutab \
       "${input}" \
       -zotus "${output}/ASVs.R1.fa" \
       -otutabout "${output}" \
