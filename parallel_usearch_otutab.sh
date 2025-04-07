@@ -72,6 +72,10 @@ parallel_usearch_otutab() {
   #much faster to split into smaller chunks and run in parallel using
   # GNU parallel and then merge tables afterwards
   jobs=$((( maxthreads / chunksize )))
+  if [ $jobs -lt 1]
+  then
+    jobs=1
+  fi
   if [ $jobs -gt 1 ]
   then
     tmpsplitdir="${output}_tmpsplit"
@@ -117,10 +121,9 @@ parallel_usearch_otutab() {
     #dont run in parallel if maxthreads <= 2*chunksize
     usearch -otutab \
       "${input}" \
-      -zotus "${output}/ASVs.R1.fa" \
+      -zotus "${database}" \
       -otutabout "${output}" \
-      -threads "$maxthreads" \
-      $usearch_args
+      -threads "$maxthreads" $usearch_args
   fi
   rm -rf "${tmpsplitdir}"
 }
