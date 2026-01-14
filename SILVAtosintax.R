@@ -30,6 +30,7 @@ silvatosintax <- function(
     col = "tax",
     into = taxCols,
     sep = ";")
+  setDT(sintax)
   sintax[
     ,
     (taxCols) := lapply(.SD, function(x) {
@@ -47,7 +48,7 @@ silvatosintax <- function(
   sintax[, Genus := ifelse(is.na(Genus), NA, paste0("g:", Genus))]
   sintax[, Species := ifelse(is.na(Species), NA, paste0("s:", Species))]
   
-  sintax_header <- paste0(sintax[,ID], ";tax=", tidyr::unite(sintax[,-1], col = "tax", sep = ",", na.rm = TRUE)[,tax], ";")
+  sintax_header <- paste0(sintax[,ID], ";tax=", tidyr::unite(sintax[,-1], col = "tax", sep = ",", na.rm = TRUE)[,"tax"], ";")
   names(silva) <- sintax_header
   Biostrings::writeXStringSet(silva, tax_sintax_file)
 }
